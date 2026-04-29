@@ -35,7 +35,6 @@ import {
 } from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { logEvent } from "@/lib/event-logger"
-import { isSupabaseConfigured } from "@/lib/supabase/client"
 import { toast } from "sonner"
 import {
   ClipboardList,
@@ -55,17 +54,9 @@ function ScoreSheetContent() {
   const [noteBusy, setNoteBusy] = useState(false)
   const [noteError, setNoteError] = useState<string | null>(null)
 
-  const supabaseOk = isSupabaseConfigured()
-
   const handleSaveNote = async () => {
     const text = noteText.trim()
     if (!text) return
-    if (!supabaseOk) {
-      const message = "Supabase設定が未反映です。.env.local を保存後、開発サーバーを再起動してください。"
-      setNoteError(message)
-      toast.error(message)
-      return
-    }
     setNoteBusy(true)
     setNoteError(null)
     const ok = await logEvent({
@@ -134,9 +125,7 @@ function ScoreSheetContent() {
                   size="sm"
                   className="border-primary/40"
                   title={
-                    supabaseOk
-                      ? "試合中のメモを Supabase に残します"
-                      : ".env.local に NEXT_PUBLIC_SUPABASE_URL / ANON_KEY を設定してください"
+                    "試合中のメモを Supabase に残します"
                   }
                 >
                   <NotebookPen className="h-4 w-4 sm:mr-1" />
@@ -158,11 +147,6 @@ function ScoreSheetContent() {
                   maxLength={2000}
                   disabled={noteBusy}
                 />
-                {!supabaseOk ? (
-                  <p className="text-sm text-amber-600">
-                    Supabase設定が未反映です。.env.local を保存後、`npm run dev` を再起動してください。
-                  </p>
-                ) : null}
                 {noteError ? (
                   <p className="text-sm text-destructive">{noteError}</p>
                 ) : null}
