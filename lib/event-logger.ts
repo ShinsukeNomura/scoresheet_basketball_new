@@ -32,7 +32,7 @@ export async function logEvent({
   screen,
   team,
   payload = {},
-}: LogEventInput): Promise<void> {
+}: LogEventInput): Promise<boolean> {
   const supabase = getSupabaseBrowserClient()
 
   if (!supabase) {
@@ -42,7 +42,7 @@ export async function logEvent({
         "[logEvent] Supabase環境変数が未設定です。NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY を設定してください。"
       )
     }
-    return
+    return false
   }
 
   const { error } = await supabase.from("logs").insert({
@@ -55,5 +55,7 @@ export async function logEvent({
 
   if (error) {
     console.error("[logEvent] insert failed:", error.message)
+    return false
   }
+  return true
 }
