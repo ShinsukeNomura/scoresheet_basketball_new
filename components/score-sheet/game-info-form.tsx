@@ -64,20 +64,22 @@ export function GameInfoForm() {
           </Select>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="min-w-0 space-y-2">
             <Label htmlFor="date">日付</Label>
             <Input
               id="date"
               type="date"
+              className="w-full min-w-0"
               value={gameInfo.date}
               onChange={(e) => updateGameInfo({ date: e.target.value })}
             />
           </div>
-          <div className="space-y-2">
+          <div className="min-w-0 space-y-2">
             <Label htmlFor="venue">場所</Label>
             <Input
               id="venue"
+              className="w-full min-w-0"
               placeholder="例：⚪︎⚪︎体育館"
               value={gameInfo.venue}
               onChange={(e) => updateGameInfo({ venue: e.target.value })}
@@ -85,51 +87,56 @@ export function GameInfoForm() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="min-w-0 space-y-2">
             <Label htmlFor="startTime">開始時間</Label>
             <Input
               id="startTime"
               type="time"
+              className="w-full min-w-0"
               value={gameInfo.startTime}
               onChange={(e) => updateGameInfo({ startTime: e.target.value })}
             />
           </div>
-          <div className="space-y-2">
+          <div className="min-w-0 space-y-2">
             <Label htmlFor="endTime">終了時間</Label>
             <Input
               id="endTime"
               type="time"
+              className="w-full min-w-0"
               value={gameInfo.endTime}
               onChange={(e) => updateGameInfo({ endTime: e.target.value })}
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-3">
-          <div className="space-y-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div className="min-w-0 space-y-2">
             <Label htmlFor="gameNumber">試合No.</Label>
             <Input
               id="gameNumber"
+              className="w-full min-w-0"
               placeholder="例：C28"
               value={gameInfo.gameNumber}
               onChange={(e) => updateGameInfo({ gameNumber: e.target.value })}
             />
           </div>
-          <div className="space-y-2">
+          <div className="min-w-0 space-y-2">
             <Label htmlFor="programPage">ページ</Label>
             <Input
               id="programPage"
               type="number"
+              className="w-full min-w-0"
               placeholder="例：16"
               value={gameInfo.programPage}
               onChange={(e) => updateGameInfo({ programPage: e.target.value })}
             />
           </div>
-          <div className="space-y-2">
+          <div className="min-w-0 space-y-2">
             <Label htmlFor="block">ブロック</Label>
             <Input
               id="block"
+              className="w-full min-w-0"
               placeholder="例：A"
               value={gameInfo.block}
               onChange={(e) => updateGameInfo({ block: e.target.value })}
