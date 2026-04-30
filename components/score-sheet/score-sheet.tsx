@@ -11,9 +11,9 @@ import { QuarterControl } from "./quarter-control"
 import { TimeoutBar } from "./timeout-bar"
 import { OfficialsForm } from "./officials-form"
 import { FinalResultPanel } from "./final-result-panel"
-import { MemoLogPanel } from "./memo-log-panel"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,15 +25,6 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
 import { Textarea } from "@/components/ui/textarea"
 import { logEvent } from "@/lib/event-logger"
 import { toast } from "sonner"
@@ -45,13 +36,11 @@ import {
   Info,
   User,
   NotebookPen,
-  ScrollText,
 } from "lucide-react"
 
 function ScoreSheetContent() {
   const { resetState, state, getTotalScore } = useScore()
   const [activeTab, setActiveTab] = useState("score")
-  const [noteOpen, setNoteOpen] = useState(false)
   const [noteText, setNoteText] = useState("")
   const [noteBusy, setNoteBusy] = useState(false)
   const [noteError, setNoteError] = useState<string | null>(null)
@@ -80,7 +69,6 @@ function ScoreSheetContent() {
     setNoteBusy(false)
     if (result.ok) {
       setNoteText("")
-      setNoteOpen(false)
       toast.success("メモを記録しました。")
     } else {
       const message = `送信に失敗しました: ${result.reason}`
@@ -111,66 +99,6 @@ function ScoreSheetContent() {
             <h1 className="text-lg font-bold">バスケスコアシート</h1>
           </div>
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-            <Dialog
-              open={noteOpen}
-              onOpenChange={(open) => {
-                setNoteOpen(open)
-                if (!open) {
-                  setNoteError(null)
-                }
-              }}
-            >
-              <DialogTrigger asChild>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="border-primary/40"
-                  title={
-                    "試合中のメモを Supabase に残します"
-                  }
-                >
-                  <NotebookPen className="h-4 w-4 sm:mr-1" />
-                  <span className="hidden sm:inline">メモ記録</span>
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md" showCloseButton>
-                <DialogHeader>
-                  <DialogTitle>メモを記録</DialogTitle>
-                  <DialogDescription>
-                    審判・トラブル・備考など、あとから振り返りたい内容を残せます。現在のタブ・スコア概要も一緒に保存されます。
-                  </DialogDescription>
-                </DialogHeader>
-                <Textarea
-                  value={noteText}
-                  onChange={(e) => setNoteText(e.target.value)}
-                  placeholder="例: 3Q 〇〇の判定について記録…"
-                  className="min-h-[100px] resize-y"
-                  maxLength={2000}
-                  disabled={noteBusy}
-                />
-                {noteError ? (
-                  <p className="text-sm text-destructive">{noteError}</p>
-                ) : null}
-                <DialogFooter className="gap-2 sm:gap-0">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => setNoteOpen(false)}
-                    disabled={noteBusy}
-                  >
-                    キャンセル
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={() => void handleSaveNote()}
-                    disabled={noteBusy || !noteText.trim()}
-                  >
-                    {noteBusy ? "送信中…" : "Supabase に保存"}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="ghost" size="sm">
@@ -241,12 +169,36 @@ function ScoreSheetContent() {
             <CombinedScoreGrid />
           </TabsContent>
 
-          <TabsContent value="memos" className="mt-0 space-y-4 p-4">
-            <MemoLogPanel active={activeTab === "memos"} />
-          </TabsContent>
-
           <TabsContent value="result" className="mt-0 space-y-4 p-4">
             <FinalResultPanel />
+          </TabsContent>
+
+          <TabsContent value="memo" className="mt-0 space-y-4 p-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">メモ記録</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <Textarea
+                  value={noteText}
+                  onChange={(e) => setNoteText(e.target.value)}
+                  placeholder="例: 3Q 〇〇の判定について記録…"
+                  className="min-h-[140px] resize-y"
+                  maxLength={2000}
+                  disabled={noteBusy}
+                />
+                {noteError ? <p className="text-sm text-destructive">{noteError}</p> : null}
+                <div className="flex justify-end">
+                  <Button
+                    type="button"
+                    onClick={() => void handleSaveNote()}
+                    disabled={noteBusy || !noteText.trim()}
+                  >
+                    {noteBusy ? "送信中…" : "Supabase に保存"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* ボトムナビ */}
@@ -273,18 +225,18 @@ function ScoreSheetContent() {
               <span className="text-[10px] font-bold">スコア</span>
             </TabsTrigger>
             <TabsTrigger
-              value="memos"
-              className="flex h-14 flex-col gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-            >
-              <ScrollText className="h-5 w-5" />
-              <span className="text-[10px] font-bold">メモ</span>
-            </TabsTrigger>
-            <TabsTrigger
               value="result"
               className="flex h-14 flex-col gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
             >
               <Trophy className="h-5 w-5" />
               <span className="text-[10px] font-bold">結果</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="memo"
+              className="flex h-14 flex-col gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              <NotebookPen className="h-5 w-5" />
+              <span className="text-[10px] font-bold">メモ</span>
             </TabsTrigger>
           </TabsList>
         </Tabs>

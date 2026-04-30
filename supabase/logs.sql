@@ -23,14 +23,14 @@ create policy "anon_can_insert_logs"
   to anon, authenticated
   with check (true);
 
--- アプリ内一覧表示のため、匿名でも読み取り可（公開URL＋anonキー前提）
+-- 読み取りは無効（保存専用）
 drop policy if exists "deny_select_logs" on public.logs;
 drop policy if exists "anon_can_select_logs" on public.logs;
-create policy "anon_can_select_logs"
+create policy "deny_select_logs"
   on public.logs
   for select
   to anon, authenticated
-  using (true);
+  using (false);
 
 create index if not exists logs_created_at_idx on public.logs (created_at desc);
 create index if not exists logs_event_type_idx on public.logs (event_type);
