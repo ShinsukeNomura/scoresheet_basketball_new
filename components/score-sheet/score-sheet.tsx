@@ -11,6 +11,7 @@ import { QuarterControl } from "./quarter-control"
 import { TimeoutBar } from "./timeout-bar"
 import { OfficialsForm } from "./officials-form"
 import { FinalResultPanel } from "./final-result-panel"
+import { MemoLogPanel } from "./memo-log-panel"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import {
@@ -44,6 +45,7 @@ import {
   Info,
   User,
   NotebookPen,
+  ScrollText,
 } from "lucide-react"
 
 function ScoreSheetContent() {
@@ -59,7 +61,7 @@ function ScoreSheetContent() {
     if (!text) return
     setNoteBusy(true)
     setNoteError(null)
-    const ok = await logEvent({
+    const result = await logEvent({
       eventType: "user_note",
       screen: activeTab,
       payload: {
@@ -76,12 +78,12 @@ function ScoreSheetContent() {
       },
     })
     setNoteBusy(false)
-    if (ok) {
+    if (result.ok) {
       setNoteText("")
       setNoteOpen(false)
       toast.success("メモを記録しました。")
     } else {
-      const message = "送信に失敗しました。ネットワークと Supabase の設定を確認してください。"
+      const message = `送信に失敗しました: ${result.reason}`
       setNoteError(message)
       toast.error(message)
     }
@@ -239,12 +241,16 @@ function ScoreSheetContent() {
             <CombinedScoreGrid />
           </TabsContent>
 
+          <TabsContent value="memos" className="mt-0 space-y-4 p-4">
+            <MemoLogPanel active={activeTab === "memos"} />
+          </TabsContent>
+
           <TabsContent value="result" className="mt-0 space-y-4 p-4">
             <FinalResultPanel />
           </TabsContent>
 
-          {/* ボトムナビ: 試合情報, 選手, スコア, 結果（TOはスコア画面のバーで操作） */}
-          <TabsList className="fixed bottom-0 left-0 right-0 z-20 grid h-auto grid-cols-4 gap-1 rounded-none border-t bg-card p-2">
+          {/* ボトムナビ */}
+          <TabsList className="fixed bottom-0 left-0 right-0 z-20 grid h-auto grid-cols-5 gap-1 rounded-none border-t bg-card p-2">
             <TabsTrigger
               value="info"
               className="flex h-14 flex-col gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -265,6 +271,13 @@ function ScoreSheetContent() {
             >
               <Timer className="h-5 w-5" />
               <span className="text-[10px] font-bold">スコア</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="memos"
+              className="flex h-14 flex-col gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              <ScrollText className="h-5 w-5" />
+              <span className="text-[10px] font-bold">メモ</span>
             </TabsTrigger>
             <TabsTrigger
               value="result"

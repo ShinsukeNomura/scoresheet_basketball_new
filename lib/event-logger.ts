@@ -9,6 +9,10 @@ type LogEventInput = {
   payload?: Record<string, unknown>
 }
 
+export type LogEventResult =
+  | { ok: true }
+  | { ok: false; reason: string }
+
 const SESSION_KEY = "basket_scoresheet_session_id"
 let warnedOnce = false
 
@@ -32,7 +36,7 @@ export async function logEvent({
   screen,
   team,
   payload = {},
-}: LogEventInput): Promise<boolean> {
+}: LogEventInput): Promise<LogEventResult> {
   const supabase = getSupabaseBrowserClient()
 
   if (!supabase) {
@@ -42,7 +46,7 @@ export async function logEvent({
         "[logEvent] Supabase環境変数が未設定です。NEXT_PUBLIC_SUPABASE_URL / NEXT_PUBLIC_SUPABASE_ANON_KEY を設定してください。"
       )
     }
-    return false
+    return { ok: false, reason: "Supabaseクライアントを初期化できませんでした（env未設定の可能性）" }
   }
 
   const { error } = await supabase.from("logs").insert({
@@ -55,7 +59,7 @@ export async function logEvent({
 
   if (error) {
     console.error("[logEvent] insert failed:", error.message)
-    return false
+    return { ok: false, reason: error.message }
   }
-  return true
+  return { ok: true }
 }
