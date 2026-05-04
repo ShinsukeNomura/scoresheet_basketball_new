@@ -11,6 +11,7 @@ import { QuarterControl } from "./quarter-control"
 import { TimeoutBar } from "./timeout-bar"
 import { OfficialsForm } from "./officials-form"
 import { FinalResultPanel } from "./final-result-panel"
+import { AdminLogPanel } from "./admin-log-panel"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -36,6 +37,7 @@ import {
   Info,
   User,
   NotebookPen,
+  Shield,
 } from "lucide-react"
 
 function ScoreSheetContent() {
@@ -201,8 +203,12 @@ function ScoreSheetContent() {
             </Card>
           </TabsContent>
 
+          <TabsContent value="admin" className="mt-0 space-y-4 p-4">
+            <AdminLogPanel />
+          </TabsContent>
+
           {/* ボトムナビ */}
-          <TabsList className="fixed bottom-0 left-0 right-0 z-20 grid h-auto grid-cols-5 gap-1 rounded-none border-t bg-card p-2">
+          <TabsList className="fixed bottom-0 left-0 right-0 z-20 grid h-auto grid-cols-6 gap-1 rounded-none border-t bg-card p-2">
             <TabsTrigger
               value="info"
               className="flex h-14 flex-col gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -237,6 +243,13 @@ function ScoreSheetContent() {
             >
               <NotebookPen className="h-5 w-5" />
               <span className="text-[10px] font-bold">メモ</span>
+            </TabsTrigger>
+            <TabsTrigger
+              value="admin"
+              className="flex h-14 flex-col gap-1 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
+              <Shield className="h-5 w-5" />
+              <span className="text-[10px] font-bold">管理</span>
             </TabsTrigger>
           </TabsList>
         </Tabs>
