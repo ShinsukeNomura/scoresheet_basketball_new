@@ -170,6 +170,7 @@ interface ScoreContextType {
   updatePlayer: (team: "A" | "B", playerIndex: number, player: Partial<Player>) => void
   setWinner: (winner: string) => void
   resetState: () => void
+  restoreState: (nextState: ScoreState) => void
   getQuarterScore: (team: "A" | "B", quarter: number) => number
   getTotalScore: (team: "A" | "B") => number
   toggleQuarterLine: (score: number) => void
@@ -439,6 +440,10 @@ export function ScoreProvider({ children }: { children: ReactNode }) {
     setState(initialState)
   }
 
+  const restoreState = (nextState: ScoreState) => {
+    setState(nextState)
+  }
+
   const toggleQuarterLine = (score: number) => {
     setState((prev) => ({
       ...prev,
@@ -487,6 +492,7 @@ export function ScoreProvider({ children }: { children: ReactNode }) {
         updatePlayer,
         setWinner,
         resetState,
+        restoreState,
         getQuarterScore,
         getTotalScore,
         toggleQuarterLine,

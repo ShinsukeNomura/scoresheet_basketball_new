@@ -37,15 +37,17 @@ import {
   Info,
   User,
   NotebookPen,
+  Save,
   Shield,
 } from "lucide-react"
 
 function ScoreSheetContent() {
-  const { resetState, state, getTotalScore } = useScore()
+  const { resetState, restoreState, state, getTotalScore } = useScore()
   const [activeTab, setActiveTab] = useState("score")
   const [noteText, setNoteText] = useState("")
   const [noteBusy, setNoteBusy] = useState(false)
   const [noteError, setNoteError] = useState<string | null>(null)
+  const [sheetSaveBusy, setSheetSaveBusy] = useState(false)
 
   const handleSaveNote = async () => {
     const text = noteText.trim()
@@ -78,6 +80,35 @@ function ScoreSheetContent() {
       toast.error(message)
     }
   }
+
+  const handleSaveScoreSheet = async () => {
+    setSheetSaveBusy(true)
+    const stateToSave = {
+      ...state,
+      finalScoreA: getTotalScore("A"),
+      finalScoreB: getTotalScore("B"),
+    }
+    const res = await fetch("/api/score-sheets", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ state: stateToSave }),
+    })
+    const json = (await res.json().catch(() => ({}))) as { error?: string }
+    setSheetSaveBusy(false)
+
+    if (!res.ok) {
+      toast.error(json.error ?? "スコアシートの保存に失敗しました。")
+      return
+    }
+
+    toast.success("スコアシートを保存しました。")
+  }
+
+  const handleRestoreScoreSheet = (nextState: typeof state) => {
+    restoreState(nextState)
+    setActiveTab("score")
+    toast.success("保存済みスコアシートを開きました。")
+  }
   
   const jumpToFoulSelection = (team: "A" | "B") => {
     setActiveTab("players")
@@ -101,6 +132,15 @@ function ScoreSheetContent() {
             <h1 className="text-lg font-bold">バスケスコアシート</h1>
           </div>
           <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => void handleSaveScoreSheet()}
+              disabled={sheetSaveBusy}
+            >
+              <Save className="h-4 w-4 mr-1" />
+              {sheetSaveBusy ? "保存中" : "保存"}
+            </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="ghost" size="sm">
@@ -204,7 +244,7 @@ function ScoreSheetContent() {
           </TabsContent>
 
           <TabsContent value="admin" className="mt-0 space-y-4 p-4">
-            <AdminLogPanel />
+            <AdminLogPanel onRestoreScoreSheet={handleRestoreScoreSheet} />
           </TabsContent>
 
           {/* ボトムナビ */}

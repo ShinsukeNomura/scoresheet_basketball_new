@@ -132,7 +132,13 @@ export function PlayerRosterForm({ team }: PlayerRosterFormProps) {
                       pattern="[0-9]*"
                       maxLength={2}
                       placeholder="-"
-                      className="w-12 text-center h-8 text-sm font-bold px-1 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      className={cn(
+                        "w-12 text-center h-8 text-sm font-bold px-1 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
+                        "border-2 shadow-sm transition-colors",
+                        team === "A"
+                          ? "border-primary bg-primary/10 hover:bg-primary/15 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/30"
+                          : "border-accent bg-accent/10 hover:bg-accent/15 focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/30"
+                      )}
                       value={player.number}
                       onChange={(e) => updatePlayer(team, index, { number: e.target.value.replace(/\D/g, "").slice(0, 2) })}
                       onClick={(e) => e.stopPropagation()}

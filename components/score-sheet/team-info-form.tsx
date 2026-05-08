@@ -40,6 +40,12 @@ export function TeamInfoForm({ team }: TeamInfoFormProps) {
               placeholder="例：○○中学校"
               value={teamData.name}
               onChange={(e) => updateTeam({ name: e.target.value })}
+              className={cn(
+                "border-2 shadow-sm transition-colors",
+                team === "A"
+                  ? "border-primary bg-primary/5 hover:bg-primary/10 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/35"
+                  : "border-accent bg-accent/5 hover:bg-accent/10 focus-visible:border-accent focus-visible:ring-2 focus-visible:ring-accent/35"
+              )}
             />
           </div>
           <div className="space-y-2">

@@ -82,9 +82,9 @@ export function PrintScoreSheet() {
   }
 
   const timeoutCellClass =
-    "flex h-[4.5mm] items-center justify-center border border-black font-mono text-[7px] leading-none"
+    "flex h-[3.4mm] max-h-[3.4mm] shrink-0 items-center justify-center border border-black font-mono text-[7px] leading-none"
   const foulCellClass =
-    "flex h-[4.5mm] items-center justify-center border border-black text-[7px] leading-none"
+    "flex h-[3.4mm] max-h-[3.4mm] shrink-0 items-center justify-center border border-black text-[7px] leading-none"
 
   const renderTeamFoulCells = (count: number) =>
     Array.from({ length: 4 }, (_, i) => {
@@ -171,24 +171,34 @@ export function PrintScoreSheet() {
           </div>
         </div>
 
-        <table className="w-full table-fixed text-[8px]">
+        <table className="w-full table-fixed border-collapse text-[7px] leading-none">
           <thead>
             <tr className="border-b border-black">
-              <th className="w-[22px] border-r border-black px-0.5 py-0.5">選</th>
-              <th className="border-r border-black px-0.5 py-0.5">手 氏 名</th>
-              <th className="w-[22px] border-r border-black px-0.5 py-0.5">No</th>
-              <th className="w-[18px] border-r border-black px-0.5 py-0.5">C</th>
-              <th className="w-[76px] px-0.5 py-0.5">ファウル</th>
+              <th className="w-[22px] border-r border-black px-0.5 py-0">選</th>
+              <th className="border-r border-black px-0.5 py-0">手 氏 名</th>
+              <th className="w-[22px] border-r border-black px-0.5 py-0">No</th>
+              <th className="w-[18px] border-r border-black px-0.5 py-0">C</th>
+              <th className="w-[76px] px-0.5 py-0">ファウル</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((player, idx) => (
-              <tr key={`${team}-${idx}`} className="h-[14px] border-b border-black">
-                <td className="border-r border-black px-0.5 text-center">{idx + 1}</td>
-                <td className="border-r border-black px-1">{toDisplay(player.name)}</td>
-                <td className="border-r border-black px-0.5 text-center font-mono">{toDisplay(player.number)}</td>
-                <td className="border-r border-black px-0.5 text-center">{player.isCaptain ? "●" : ""}</td>
-                <td className="px-0.5 text-center">{renderFoulsPrint(player.fouls)}</td>
+              <tr key={`${team}-${idx}`} className="border-b border-black">
+                <td className="h-[3.1mm] max-h-[3.1mm] border-r border-black px-0.5 py-0 text-center align-middle">
+                  {idx + 1}
+                </td>
+                <td className="h-[3.1mm] max-h-[3.1mm] border-r border-black px-0.5 py-0 align-middle">
+                  {toDisplay(player.name)}
+                </td>
+                <td className="h-[3.1mm] max-h-[3.1mm] border-r border-black px-0.5 py-0 text-center align-middle font-mono">
+                  {toDisplay(player.number)}
+                </td>
+                <td className="h-[3.1mm] max-h-[3.1mm] border-r border-black px-0.5 py-0 text-center align-middle">
+                  {player.isCaptain ? "●" : ""}
+                </td>
+                <td className="h-[3.1mm] max-h-[3.1mm] px-0.5 py-0 text-center align-middle">
+                  {renderFoulsPrint(player.fouls)}
+                </td>
               </tr>
             ))}
           </tbody>
@@ -217,7 +227,7 @@ export function PrintScoreSheet() {
           <div>チーム B：{toDisplay(state.teamB.name)}</div>
         </div>
 
-        <div className="grid grid-cols-[1fr_1fr] border-b border-black">
+        <div className="grid grid-cols-[1fr_1fr] items-start border-b border-black">
           <div className="border-r border-black">
             <div className="grid grid-cols-[66px_1fr_54px_54px] border-b border-black text-[9px]">
               <div className="border-r border-black px-1 py-0.5 font-bold">大会名</div>
@@ -240,9 +250,12 @@ export function PrintScoreSheet() {
             <div className="border-b border-black px-1 py-0.5 text-center font-bold tracking-[0.3em]">
               ランニング・スコア
             </div>
-            <div className="grid grid-cols-4">
+            <div className="grid grid-cols-4 items-start">
               {runningBlocks.map((block, idx) => (
-                <div key={`running-head-${idx}`} className={cn("border-black", idx < 3 && "border-r")}>
+                <div
+                  key={`running-head-${idx}`}
+                  className={cn("self-start border-black", idx < 3 && "border-r")}
+                >
                   <div className="grid grid-cols-3 border-b border-black text-center text-[8px] font-bold">
                     <div className="border-r border-black">A</div>
                     <div className="border-r border-black">B</div>
@@ -254,18 +267,21 @@ export function PrintScoreSheet() {
           </div>
         </div>
 
-        <div className="grid grid-cols-[1fr_1fr]">
+        <div className="grid grid-cols-[1fr_1fr] items-start">
           <div className="border-r border-black">
             {renderTeamPanel("A")}
             {renderTeamPanel("B")}
           </div>
 
-          <div className="border-b border-black">
-            <div className="grid grid-cols-4 text-[7px]">
+          <div className="border-b border-black self-start">
+            <div className="grid grid-cols-4 items-start text-[7px]">
               {runningBlocks.map((colPoints, blockIdx) => (
                 <div
                   key={`running-${blockIdx}`}
-                  className={cn("min-w-0 border-black", blockIdx < 3 && "border-r")}
+                  className={cn(
+                    "min-w-0 self-start border-black",
+                    blockIdx < 3 && "border-r"
+                  )}
                 >
                   <div className="grid grid-cols-[1fr_1fr_1fr_1fr] border-b border-black text-center font-bold">
                     <div className="border-r border-black py-[1px]">A</div>
@@ -361,7 +377,7 @@ export function PrintScoreSheet() {
                     return (
                       <div
                         key={`p-${point}`}
-                        className="grid h-[5.6mm] grid-cols-[1fr_1fr_1fr_1fr] text-center leading-none"
+                        className="grid h-[4mm] max-h-[4mm] shrink-0 grid-cols-[1fr_1fr_1fr_1fr] text-center leading-none"
                       >
                         <div className={cn("flex items-center justify-center border-r border-black font-mono", bottomA)}>
                           {metaA?.hideJerseyAndScore ? (
@@ -420,7 +436,7 @@ export function PrintScoreSheet() {
           </div>
         </div>
 
-        <div className="grid grid-cols-[1fr_1fr] border-b border-black text-[9px]">
+        <div className="grid grid-cols-[1fr_1fr] items-start border-b border-black text-[9px]">
           <div className="border-r border-black">
             <div className="grid grid-cols-[120px_1fr] border-b border-black">
               <div className="border-r border-black px-1 py-0.5">スコアラー</div>
