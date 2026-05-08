@@ -11,6 +11,7 @@ import {
   quarterSeparatorLineStylesForTeam,
 } from "@/lib/running-score-helpers"
 import { normalizeQuarterMinutes } from "@/lib/timeout-sheet"
+import { countTeamFoulsForQuarter } from "@/lib/team-fouls"
 import { cn } from "@/lib/utils"
 
 export function PrintScoreSheet() {
@@ -65,7 +66,7 @@ export function PrintScoreSheet() {
 
   const getTeamFoulValue = (team: "A" | "B", quarter: number) => {
     const teamData = team === "A" ? state.teamA : state.teamB
-    return teamData.teamFouls[quarter - 1]?.[0] ?? 0
+    return countTeamFoulsForQuarter(teamData, quarter)
   }
 
   const getTimeoutStamp = (team: "A" | "B", half: 0 | 1, index: number) => {

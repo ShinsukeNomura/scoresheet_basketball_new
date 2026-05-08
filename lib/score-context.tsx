@@ -3,6 +3,7 @@
 import { createContext, useContext, useState, type ReactNode } from "react"
 import { normalizeQuarterMinutes } from "@/lib/timeout-sheet"
 import { logEvent } from "@/lib/event-logger"
+import { teamFoulsMatrixFromPlayers } from "@/lib/team-fouls"
 
 export type FoulType = "P" | "P1" | "P2" | "P3" | "T" | "T1" | "U" | "U1" | "U2" | "D" | "C" | "B" | "GD" | ""
 
@@ -313,9 +314,10 @@ export function ScoreProvider({ children }: { children: ReactNode }) {
       const player = { ...newPlayers[playerIndex] }
       player.fouls = [...player.fouls, { type: foulType, quarter: prev.currentQuarter }]
       newPlayers[playerIndex] = player
+      const nextTeam = { ...prev[teamKey], players: newPlayers }
       return {
         ...prev,
-        [teamKey]: { ...prev[teamKey], players: newPlayers },
+        [teamKey]: { ...nextTeam, teamFouls: teamFoulsMatrixFromPlayers(nextTeam) },
       }
     })
   }
@@ -335,9 +337,10 @@ export function ScoreProvider({ children }: { children: ReactNode }) {
       const player = { ...newPlayers[playerIndex] }
       player.fouls = player.fouls.slice(0, -1)
       newPlayers[playerIndex] = player
+      const nextTeam = { ...prev[teamKey], players: newPlayers }
       return {
         ...prev,
-        [teamKey]: { ...prev[teamKey], players: newPlayers },
+        [teamKey]: { ...nextTeam, teamFouls: teamFoulsMatrixFromPlayers(nextTeam) },
       }
     })
   }
@@ -441,7 +444,17 @@ export function ScoreProvider({ children }: { children: ReactNode }) {
   }
 
   const restoreState = (nextState: ScoreState) => {
-    setState(nextState)
+    setState({
+      ...nextState,
+      teamA: {
+        ...nextState.teamA,
+        teamFouls: teamFoulsMatrixFromPlayers(nextState.teamA),
+      },
+      teamB: {
+        ...nextState.teamB,
+        teamFouls: teamFoulsMatrixFromPlayers(nextState.teamB),
+      },
+    })
   }
 
   const toggleQuarterLine = (score: number) => {
